@@ -1,0 +1,85 @@
+---
+title: "Regression"
+author: "Michele Goldin"
+date: "2/13/2018"
+output: 
+  html_document: 
+    highlight: pygments
+    theme: spacelab
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Regression example
+
+This is a simple bivariate regression example.
+Two plus two equals `r 2+2`.
+
+```{r, math_example}
+2+2
+```
+
+```{r, my_setup, echo = TRUE, message = FALSE}
+library(languageR)
+library(tidyverse)
+str(spanish)
+
+```
+
+#Tidy some data
+
+Here we tidy the data.
+
+```{r, my_plot, fig.align='center', fig.width=10, fig.height=7}
+
+my_data <- spanish%>%
+  select(., x = X14461gll, y = X14473gll)%>%
+  filter(., y < 0.06, x < 0.075)
+
+my_data%>%
+  ggplot(., aes(x = x, y = y))+
+    geom_point() +
+    geom_smooth(method= 'lm')
+```
+
+#Model
+here we fit a model.
+
+```{r, my_model}
+my_fit <- lm(y~x, data = my_data)
+summary(my_fit)
+
+confint(my_fit)
+```
+
+The data were analyzed ..... (Slope: `r coefficients(my_fit)[2]`, CI: LB: `r confint(my_fit) [1,2]`)
+
+```{r}
+coefficients(my_fit)
+```
+
+```{r}
+hist(residuals(my_fit))
+qqnorm(residuals(my_fit))
+qqline(residuals(my_fit))
+```
+
+```{r}
+my_data <- spanish%>%
+  select(., x = X14474gll, y = X14467gll) %>%
+  filter(., y < 0.05, x < 0.025)
+#this gets rid of outliers and 'zooms' in
+
+my_data%>%
+  ggplot(., aes(x = x, y = y)) +
+    geom_point() +
+    geom_smooth(method= 'lm')
+
+my_summary <- lm(y~x, data = my_data)
+summary(my_summary)
+#to summary the lm, use this formula: lm(mpg~wt, data =mtcars)
+
+```
